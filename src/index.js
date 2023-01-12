@@ -3,11 +3,10 @@ const express = require("express");
 const app = express();
 
 const user = require("./routes/user");
-
 app.use(express.json());
 
 //ROUTERS
-app.use("/user", user);
+app.use("/users", user);
 
 const port = 1000;
 
