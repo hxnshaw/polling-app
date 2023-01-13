@@ -21,7 +21,7 @@ exports.register = async (req, res) => {
         email,
         passcode: passcodeHash,
       };
-      console.log(user);
+      //  console.log(user);
 
       var flag = 1; //Declaring a flag
 
@@ -39,9 +39,7 @@ exports.register = async (req, res) => {
             });
           } else {
             flag = 1;
-            res
-              .status(200)
-              .send({ message: "User added to database, not verified" });
+            res.status(200).send({ message: "WELCOME!" });
           }
         }
       );
@@ -53,7 +51,7 @@ exports.register = async (req, res) => {
           },
           process.env.SECRET_KEY
         );
-        console.log(token);
+        //  console.log(token);
       }
     }
   } catch (err) {
