@@ -10,40 +10,56 @@ exports.register = async (req, res) => {
     ]);
     const arr = data.rows;
     if (arr.length != 0) {
-      return res.status(400).json({ error: "Email already exists!" });
-    } else {
-      bcrypt.hash(passcode, 10, (err, hash) => {
-        if (err) return res.status(err).json({ error: "Server Error" });
+      return res.status(400).json({
+        error: "Email already exists.",
       });
+    } else {
+      const salt = await bcrypt.genSalt();
+      const passcodeHash = await bcrypt.hash(passcode, salt);
       const user = {
         username,
         email,
-        passcode,
+        passcode: passcodeHash,
       };
-      var flag = 1;
+      console.log(user);
+
+      var flag = 1; //Declaring a flag
+
+      //Inserting data into the database
 
       pool.query(
-        "INSERT INTO users (username, email, passcode) VALUES ($1, $2, $3)",
+        "INSERT INTO users (username, email, passcode) VALUES ($1,$2,$3)",
         [user.username, user.email, user.passcode],
         (err) => {
           if (err) {
-            flag = 0;
-            console.log(err);
-            return res.status(500).json({ error: "Database Error" });
+            flag = 0; //If user  is not inserted to database assigning flag as 0/false.
+            console.error(err);
+            return res.status(500).json({
+              error: err.message,
+            });
           } else {
             flag = 1;
             res
               .status(200)
-              .json({ message: "User added to database, not verified" });
+              .send({ message: "User added to database, not verified" });
           }
         }
       );
       if (flag) {
-        const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY);
+        const token = jwt.sign(
+          //Signing a jwt token
+          {
+            email: user.email,
+          },
+          process.env.SECRET_KEY
+        );
+        console.log(token);
       }
     }
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: "Database error while registering user" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: "Database error while registering user!", //Database connection error
+    });
   }
 };
