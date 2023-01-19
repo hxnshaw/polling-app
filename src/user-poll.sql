@@ -21,3 +21,8 @@ CREATE TABLE poll_answers(
     title VARCHAR(255) NOT NULL,
     votes VARCHAR(255) NOT NULL DEFAULT '0',
 )
+
+
+/* change column from not null to nullable*/
+
+/*ALTER TABLE users ALTER COLUMN poll_id DROP NOT NULL;*/
