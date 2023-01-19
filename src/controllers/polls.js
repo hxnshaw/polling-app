@@ -54,4 +54,19 @@ const singlePoll = async (req, res) => {
   }
 };
 
-module.exports = { createPoll, getAllPolls, singlePoll };
+const updatePoll = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, descriptions } = req.body;
+    const updatePoll = await pool.query(
+      `UPDATE poll SET title=$1,descriptions=$2 WHERE id=$3 RETURNING *`,
+      [title, descriptions, id]
+    );
+    const data = updatePoll.rows;
+    res.status(200).send({ message: "Update Successful", data });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+module.exports = { createPoll, getAllPolls, singlePoll, updatePoll };
