@@ -38,7 +38,8 @@ const createPoll = async (req, res) => {
 const getAllPolls = async (req, res) => {
   try {
     const polls = await pool.query(`SELECT * FROM poll`);
-    res.status(200).send(polls.rows);
+    const data = polls.rows;
+    res.status(200).send({ count: data.length, data });
   } catch (error) {
     res.status(error.code).send(error.message);
   }
@@ -69,4 +70,21 @@ const updatePoll = async (req, res) => {
   }
 };
 
-module.exports = { createPoll, getAllPolls, singlePoll, updatePoll };
+const deletePoll = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletePoll = await pool.query(`DELETE FROM poll WHERE id=$1`, [id]);
+    console.log(deletePoll.command);
+    res.status(200).send({ message: "Deleted Successfully" });
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+};
+
+module.exports = {
+  createPoll,
+  getAllPolls,
+  singlePoll,
+  updatePoll,
+  deletePoll,
+};
