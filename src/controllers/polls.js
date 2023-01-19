@@ -2,11 +2,9 @@ const pool = require("../db");
 
 const createPoll = async (req, res) => {
   const { title, descriptions } = req.body;
-  //res.send({ title, descriptions });
+
   try {
-    const data = await pool.query(`SELECT * FROM poll WHERE title=$1`, [
-      ($1 = title),
-    ]);
+    const data = await pool.query(`SELECT * FROM poll WHERE title=$1`, [title]);
     const arr = data.rows;
     if (arr.length != 0) {
       return res.status(400).json({
@@ -37,4 +35,23 @@ const createPoll = async (req, res) => {
   }
 };
 
-module.exports = createPoll;
+const getAllPolls = async (req, res) => {
+  try {
+    const polls = await pool.query(`SELECT * FROM poll`);
+    res.status(200).send(polls.rows);
+  } catch (error) {
+    res.status(error.code).send(error.message);
+  }
+};
+
+const singlePoll = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const poll = await pool.query(`SELECT * FROM poll WHERE id = $1`, [id]);
+    res.status(200).send(poll.rows);
+  } catch (error) {
+    res.status(error.code).send(error.message);
+  }
+};
+
+module.exports = { createPoll, getAllPolls, singlePoll };
